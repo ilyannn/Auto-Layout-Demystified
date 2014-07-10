@@ -506,20 +506,18 @@ func ConstrainViewPair(format : NSString, view1 : View, view2 : View, priority :
     InstallLayoutFormats(formats, SkipOptions, metrics, bindings, priority)
 }
 
-func ConstrainViewArray(priority : Float, format : NSString, viewArray : NSArray)
+func ConstrainViewArray(priority : Float, format : String, viewArray : [UIView])
 {
     // Views are named view1, view2, view3...
-
+    
     let formats = [format]
-    let metrics = NSDictionary()
-    var bindings = NSMutableDictionary()
-    var index : Int = 1 // start at view1
-    for eachViewItem : AnyObject in viewArray
-    {
-        let view = eachViewItem as View
-        let key = "view" + "\(index)"
-        bindings[key] = view
+    let metrics = [:]
+    var bindings = [String:UIView]()
+    
+    for (index, view) in enumerate(viewArray) {         
+        bindings["view\(index+1)"] = view
     }
+    
     InstallLayoutFormats(formats, SkipOptions, metrics, bindings, priority)
 }
 
