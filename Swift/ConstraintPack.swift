@@ -323,7 +323,7 @@ extension View {
 // **************************************
 
 // Format Installation
-func InstallLayoutFormats(formats : [NSString], options : NSLayoutFormatOptions, metrics : NSDictionary, bindings : NSDictionary, priority : Float)
+func InstallLayoutFormats(formats : [String], options : NSLayoutFormatOptions, metrics : [String:Float], bindings : [String:AnyObject], priority : Float)
 {
     for format in formats
     {
@@ -490,20 +490,19 @@ func CenterViewInSuperview(view : View, horizontal : Bool, vertical : Bool, prio
     if (vertical) {AlignViews(priority, view, view.superview, NSLayoutAttribute.CenterY)}
 }
 
-func ConstrainView(format : NSString, view : View, priority : Float)
+func ConstrainView(format : String, view : View, priority : Float)
 {
     let formats = [format]
     let bindings = ["view" : view]
-    let metrics  = NSDictionary()
-    InstallLayoutFormats(formats, SkipOptions, metrics, bindings, priority)
+    InstallLayoutFormats(formats, SkipOptions, [:], bindings, priority)
 }
 
-func ConstrainViewPair(format : NSString, view1 : View, view2 : View, priority : Float)
+func ConstrainViewPair(format : String, view1 : View, view2 : View, priority : Float)
 {
     let formats = [format]
     let bindings = ["view1" : view1, "view2" : view2]
     let metrics = NSDictionary()
-    InstallLayoutFormats(formats, SkipOptions, metrics, bindings, priority)
+    InstallLayoutFormats(formats, SkipOptions, [:], bindings, priority)
 }
 
 func ConstrainViewArray(priority : Float, format : String, viewArray : [UIView])
@@ -518,14 +517,14 @@ func ConstrainViewArray(priority : Float, format : String, viewArray : [UIView])
         bindings["view\(index+1)"] = view
     }
     
-    InstallLayoutFormats(formats, SkipOptions, metrics, bindings, priority)
+    InstallLayoutFormats(formats, SkipOptions, [:], bindings, priority)
 }
 
-func ConstrainViewsWithBindings(priority : Float, format : NSString, bindings : NSDictionary)
+func ConstrainViewsWithBindings(priority : Float, format : String, bindings : [String:AnyObject])
 {
     let formats = [format]
     let metrics = NSDictionary()
-    InstallLayoutFormats(formats, SkipOptions, metrics, bindings, priority)
+    InstallLayoutFormats(formats, SkipOptions, [:], bindings, priority)
 }
 
 // **************************************
@@ -534,46 +533,42 @@ func ConstrainViewsWithBindings(priority : Float, format : NSString, bindings : 
 
 // Working with Layout Guides. iOS Only
 #if os(iOS)
-func StretchViewToTopLayoutGuide(controller : UIViewController, view : View, inset : NSInteger, priority : Float)
+func StretchViewToTopLayoutGuide(controller : UIViewController, view : View, inset : Float, priority : Float)
 {
     let topGuide = controller.topLayoutGuide
     let metrics = ["vinset":inset]
-    let bindings = ["view" : view, "topGuide" : topGuide]
     let formats = ["V:[topGuide]-vinset-[view]"]
-    InstallLayoutFormats(formats, SkipOptions, metrics, bindings, priority)
+    InstallLayoutFormats(formats, SkipOptions, metrics, ["view" : view, "topGuide" : topGuide], priority)
 }
 
-func StretchViewToBottomLayoutGuide(controller : UIViewController, view : View, inset : NSInteger, priority : Float)
+func StretchViewToBottomLayoutGuide(controller : UIViewController, view : View, inset : Float, priority : Float)
 {
     let bottomGuide = controller.bottomLayoutGuide
     let metrics = ["vinset":inset]
-    let bindings = ["view" : view, "bottomGuide" : bottomGuide]
     let formats = ["V:[view]-vinset-[bottomGuide]"]
-    InstallLayoutFormats(formats, SkipOptions, metrics, bindings, priority)
+    InstallLayoutFormats(formats, SkipOptions, metrics, ["view" : view, "bottomGuide" : bottomGuide], priority)
 }
 
-func StretchViewToLeftLayoutGuide(controller : UIViewController, view : View, inset : NSInteger, priority : Float)
+func StretchViewToLeftLayoutGuide(controller : UIViewController, view : View, inset : Float, priority : Float)
 {
     let leftGuide = controller.leftLayoutGuide
     let metrics = ["hinset":inset]
-    let bindings = ["view" : view, "leftGuide" : leftGuide]
     let formats = ["H:[leftGuide]-hinset-[view]"]
-    InstallLayoutFormats(formats, SkipOptions, metrics, bindings, priority)
+    InstallLayoutFormats(formats, SkipOptions, metrics, ["view" : view, "leftGuide" : leftGuide], priority)
 }
 
-func StretchViewToRightLayoutGuide(controller : UIViewController, view : View, inset : NSInteger, priority : Float)
+func StretchViewToRightLayoutGuide(controller : UIViewController, view : View, inset : Float, priority : Float)
 {
     let rightGuide = controller.rightLayoutGuide
     let metrics = ["hinset":inset]
-    let bindings = ["view" : view, "rightGuide" : rightGuide]
     let formats = ["H:[view]-hinset-[rightGuide]"]
-    InstallLayoutFormats(formats, SkipOptions, metrics, bindings, priority)
+    InstallLayoutFormats(formats, SkipOptions, metrics, ["view" : view, "rightGuide" : rightGuide], priority)
 }
 
 func StretchViewToController(controller : UIViewController, view : View, inset : CGSize, priority : Float)
 {
-    StretchViewToTopLayoutGuide(controller, view, NSInteger(inset.height), priority)
-    StretchViewToBottomLayoutGuide(controller, view, NSInteger(inset.height), priority)
+    StretchViewToTopLayoutGuide(controller, view, inset.height, priority)
+    StretchViewToBottomLayoutGuide(controller, view, inset.height, priority)
     StretchViewHorizontallyToSuperview(view, inset.width, priority)
 }
 
@@ -690,8 +685,8 @@ func PlaceView(controller : UIViewController, view : UIView, position : String, 
     // Handle the two stretching cases
     if (position.hasPrefix("x"))
     {
-        StretchViewToTopLayoutGuide(controller, view, NSInteger(insetv), priority)
-        StretchViewToBottomLayoutGuide(controller, view, NSInteger(insetv), priority)
+        StretchViewToTopLayoutGuide(controller, view, insetv, priority)
+        StretchViewToBottomLayoutGuide(controller, view, insetv, priority)
         verticalPosition = "-"
     }
     
